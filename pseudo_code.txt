@@ -1,10 +1,16 @@
 import math
+import numpy as np
+import pandas as pd
 
+import time
+import random
+
+from tkinter import *
+from tkinter import ttk
 
 
 def　main():
-
-
+    
 
 
 def ear_clipping():
@@ -12,6 +18,10 @@ def ear_clipping():
 
 
 def polygon_decomposition():
+
+
+
+def GUI():
 
 
 
