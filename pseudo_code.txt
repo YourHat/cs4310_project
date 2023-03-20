@@ -1,1 +1,21 @@
+import math
 
+
+
+def　main():
+
+
+
+
+def ear_clipping():
+
+
+
+def polygon_decomposition():
+
+
+
+
+
+if __name__ == "__main__":
+    main()
