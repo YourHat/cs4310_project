@@ -1,5 +1,4 @@
-# cs4310_project
-Triangulation of Polygon and Point Sets
+# Triangulation of Polygon and Point Sets
 
 ## algorithms to implement
 - ear clipping
