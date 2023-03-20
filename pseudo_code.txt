@@ -8,21 +8,23 @@ import random
 from tkinter import *
 from tkinter import ttk
 
+class polygon?
+
 
 def　main():
     
 
 
-def ear_clipping():
+def ear_clipping(polygon):
 
 
 
-def polygon_decomposition():
-
+def polygon_decomposition(polygon):
+    
 
 
 def GUI():
-
+    #create GUI?
 
 
 
