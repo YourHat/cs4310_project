@@ -4,12 +4,12 @@ class Point:
 
 
 class LineSegment:
-    x: Point
-    y: Point
+    a: Point 
+    b: Point 
 
 
 class Triangle:
-    a: Point
+    a: Point 
     b: Point
     c: Point
 
@@ -18,21 +18,27 @@ def next_point(origin, triangles) -> Point:
     """
     Given a polygon and a point returns the next point clockwise.
     """
-    pass
-
-
+    for seg in triangles
+        if neigbors(origin, seg):
+            return seg.a or seg.b
+        
 def neighbors(origin, seg) -> bool:
     """
     Given two line segments returns true if two points are connected.
     """
-    pass
+    if origin.a or origin.b is same as seg.a or seg.b
+    return true
+    else
+    return false
 
 
 def left_most_segment(polygon) -> LineSegment:
     """
     Given a polygon returns the left most line segment clockwise.
     """
-    pass
+    for linesegment in polygon:
+        #get smallest value of x 
+    return linesegment with the point with the smallest x value
 
 
 def make_triangle_from_line(origin, seg, triangles) -> Triangle:
