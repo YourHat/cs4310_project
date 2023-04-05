@@ -22,7 +22,18 @@ class Trapezoid:
 
 
 def add_horizontal_line_from_connecting_vertex(line_a, line_b, trapezoids):
-    pass
+    """
+    `line_a` connects to `line_b` at `v`, there are 3 options for adding the
+    horizontal line.
+    """
+    horizontal_line = LineSegment()
+    if line_a.is_above(horizontal_line) and line_b.is_below(horizontal_line):
+        remove_line(trapezoids, line_a)
+        add_line(trapezoids, line_b)
+    elif line_a.is_above(horizontal_line) and line_b.is_above(horizontal_line):
+        remove_line(trapezoids, line_a, line_b)
+    elif line_a.is_below(horizontal_line) and line_b.is_below(horizontal_line):
+        add_line(trapezoids, line_a, line_b)
 
 
 def horizontal(line_a, line_b) -> bool:
@@ -49,11 +60,15 @@ def decompose_poly_to_trap(polygon) -> list[Trapezoid]:
     """
 
     trapezoids = []
+    # sort all points by `y` coordinate
+    sort(polygon, lambda point: point.y)
+    prev_seg = polygon.remove(0)
     for seg in polygon:
-        prev_seg = last_seg(trapezoids)
-        if not horizontal(seg, prev_seg):
-            add_horizontal_line_from_connecting_vertex(seg, prev_seg, trapezoids)
-            decompose_trap_to_mono(last_trap(trapezoids))
+        if not horizontal(prev_seg, seg):
+            add_horizontal_line_from_connecting_vertex(prev_seg, seg, trapezoids)
+        prev_seg = seg
+
+    decompose_trap_to_mono(trapezoids)
 
 
 def decompose_trap_to_mono(trapezoid):
