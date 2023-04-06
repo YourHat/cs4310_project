@@ -39,17 +39,6 @@ def add_horizontal_line_from_connecting_vertex(line_a, line_b, trapezoids):
 def horizontal(line_a, line_b) -> bool:
     pass
 
-
-def last_seg(trapezoids) -> LineSegment:
-    pass
-
-def last_trap(trapezoids) -> Trapezoid:
-    pass
-
-def monotone_polygon(trapezoids):
-    pass
-
-
 def decompose_poly_to_trap(polygon) -> list[Trapezoid]:
     """
     `decompose_poly_to_trap` Uses a random ordering of segments it incrementally builds
