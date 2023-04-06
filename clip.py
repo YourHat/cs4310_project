@@ -33,16 +33,23 @@ def neighbors(origin, seg) -> bool:
     else:
         return False
 
+def is_there_a_point(seg1, seg2, polygon) -> bool:
+
+    pass
+
+def left_most_seg(polygon) -> LineSegment:
+    left_seg = polygon[0]
+    for seg in polygon:
+        if min(seg.a.x, seg.b.x) < min(left_seg.a.x , left_seg.b.x):
+            left_seg = seg
+    retrun left_seg
 
 
-
-def left_most_segment(polygon) -> LineSegment:
+def is_convex(seg, next_seg) -> bool:
     """
     Given a polygon returns the left most line segment clockwise.
     """
-    #smallest_line = polygon[0].a
-    #for linesegment in polygon   
-    #return linesegment with the point with the smallest x value
+    
 
     return polygon[0]
 
@@ -65,14 +72,9 @@ def ear_clip_mono_polygon(polygon):
     Given a polygon returns the left most point.
     """
     # this is not important which point is picked
-    origin = polygon[0]
-    neighbore_seg = None
-    for seg in polygon:
-        if neighbors(origin,seg):
-            neighbore_seg = seg
-            break
+    origin = left_most_seg(polygon)
 
-    triangles = [Triangle(a=origin.a, b=next_point(origin,neighbore_seg), c=origin.b)]
+    triangles = [Triangle(None, None, None)]
     #remove origin and a segment in the first triangle from polygon
 
     for seg in polygon:
