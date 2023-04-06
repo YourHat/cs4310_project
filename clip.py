@@ -50,7 +50,7 @@ def make_triangle_from_line(origin, seg, triangles) -> Triangle:
         triangles.append(t_new)
 
 
-def ear_clip_mono_polygon(polygon):
+def ear_clip_mono_polygon(polygon) -> list[Triangle]:
     """
     Given a polygon returns the left most point.
     """
@@ -63,3 +63,5 @@ def ear_clip_mono_polygon(polygon):
             triangles.append(tri)
         else:
             continue
+
+    return triangles

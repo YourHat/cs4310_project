@@ -131,7 +131,7 @@ class Polygon:
         return '\n'.join(str(seg) for seg in self.segs)
 
 
-def gen_polygon(num_points, convex=True, cuts=0) -> Polygon:
+def generate_polygon(num_points, convex=True, cuts=0) -> Polygon:
     """
     To generate a simple (convex) polygon leave the second and third
     arguments `convex` and `cuts` alone.
@@ -147,6 +147,12 @@ def gen_polygon(num_points, convex=True, cuts=0) -> Polygon:
     y_o = 5.0
     r = 5.0
     for p in points:
+    # for i, p in enumerate(points):
+        # TODO: possible way to make concave polygon
+        #
+        # vacillate between `r` between 1 to 5 and `r` between 1 and last `r`
+        # if not convex:
+        #     r = r + random() * (5 - r) if i % 2 else 1 + random() * (r - 1)
         poly.append(
             Point(
                 x_o + r * cos(p),
@@ -154,18 +160,14 @@ def gen_polygon(num_points, convex=True, cuts=0) -> Polygon:
             )
         )
 
-    print(str(poly), '\n')
-
     if not convex:
         cuts = cuts if cuts != 0 else num_points - num_points // 2
         for _ in range(cuts):
             poly.add_indent()
 
-    print(str(poly), '\n')
-
-    poly.segs.sort(key=lambda seg: tuple([seg.a.x, seg.a.y]))
+    # poly.segs.sort(key=lambda seg: tuple([seg.a.x, seg.a.y]))
     return poly
 
 
 if __name__ == '__main__':
-    print('\n'.join(str(seg.a) for seg in gen_polygon(5, convex=False, cuts=2).segs))
+    print('\n'.join(str(seg.a) for seg in generate_polygon(6, convex=False, cuts=2).segs))
