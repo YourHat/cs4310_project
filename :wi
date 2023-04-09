@@ -191,7 +191,7 @@ def ex1():
     for triangle in triangles:
         print(triangle.a.x, ",", triangle.a.y," - ", triangle.b.x,",", triangle.b.y, " - ", triangle.c.x, ",",triangle.c.y,)
 
-def ex2():
+def ex2:
     #example 2
     l7 = LineSegment(Point(0,1),Point(2,2))
     l8 = LineSegment(Point(2,2),Point(1,4))
@@ -210,7 +210,7 @@ def ex2():
 
 
 
-def temp_main():
+def temp_main()
     ex1()
     ex2()
 
