@@ -13,9 +13,10 @@ class Point:
 
     def __eq__(self, other) -> bool:
         return (
-            self is not None and other is not None
-              and abs(self.x - other.x) < 0.11
-              and abs(self.y - other.y) < 0.11
+            self is not None
+            and other is not None
+            and abs(self.x - other.x) < 0.11
+            and abs(self.y - other.y) < 0.11
         )
 
     def __str__(self) -> str:
@@ -147,7 +148,7 @@ def generate_polygon(num_points, convex=True, cuts=0) -> Polygon:
     y_o = 5.0
     r = 5.0
     for p in points:
-    # for i, p in enumerate(points):
+        # for i, p in enumerate(points):
         # TODO: possible way to make concave polygon
         #
         # vacillate between `r` between 1 to 5 and `r` between 1 and last `r`
@@ -168,11 +169,25 @@ def generate_polygon(num_points, convex=True, cuts=0) -> Polygon:
     return poly
 
 
+def neighbors(origin: LineSegment, next: LineSegment) -> bool:
+    return origin.b == next.a or origin.a == next.b
+
+
+def ear_clip(poly: Polygon) -> list[LineSegment]:
+    lines = []
+    origin = min(poly.segs, key=lambda seg: seg.a.x)
+    for seg in poly.segs:
+        if not neighbors(origin, seg):
+            lines.append(LineSegment(origin.a, seg.a))
+    return lines
+
+
 if __name__ == '__main__':
     # print('\n'.join(str(seg.a) for seg in gen_polygon(5, convex=False, cuts=2).segs))
     import matplotlib.pyplot as plt
 
-    poly = gen_polygon(8, convex=False, cuts=5)
+    # poly = gen_polygon(8, convex=False, cuts=5)
+    poly = gen_polygon(8)
 
     # Make two lists
     coords = [(seg.a.x, seg.a.y) for seg in poly.segs]
@@ -181,4 +196,13 @@ if __name__ == '__main__':
 
     plt.figure()
     plt.plot(x, y)
+    # plt.show()
+
+    i = 0
+    for seg in ear_clip(poly):
+        i += 1
+        a_x, a_y = seg.a.x, seg.a.y
+        b_x, b_y = seg.b.x, seg.b.y
+        plt.plot([a_x, b_x], [a_y, b_y])
+
     plt.show()
