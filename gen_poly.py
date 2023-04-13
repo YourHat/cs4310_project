@@ -165,9 +165,20 @@ def generate_polygon(num_points, convex=True, cuts=0) -> Polygon:
         for _ in range(cuts):
             poly.add_indent()
 
-    # poly.segs.sort(key=lambda seg: tuple([seg.a.x, seg.a.y]))
     return poly
 
 
 if __name__ == '__main__':
-    print('\n'.join(str(seg.a) for seg in generate_polygon(6, convex=False, cuts=2).segs))
+    # print('\n'.join(str(seg.a) for seg in gen_polygon(5, convex=False, cuts=2).segs))
+    import matplotlib.pyplot as plt
+
+    poly = gen_polygon(8)
+
+    # Make two lists
+    coords = [(seg.a.x, seg.a.y) for seg in poly.segs]
+    coords.append(coords[0])
+    x, y = zip(*coords)
+
+    plt.figure()
+    plt.plot(x, y)
+    plt.show()
