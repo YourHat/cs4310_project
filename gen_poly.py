@@ -183,11 +183,11 @@ def ear_clip(poly: Polygon) -> list[LineSegment]:
 
 
 if __name__ == '__main__':
-    # print('\n'.join(str(seg.a) for seg in gen_polygon(5, convex=False, cuts=2).segs))
+    # print('\n'.join(str(seg.a) for seg in generate_polygon(5, convex=False, cuts=2).segs))
     import matplotlib.pyplot as plt
 
-    # poly = gen_polygon(8, convex=False, cuts=5)
-    poly = gen_polygon(8)
+    # poly = generate_polygon(8, convex=False, cuts=5)
+    poly = generate_polygon(8)
 
     # Make two lists
     coords = [(seg.a.x, seg.a.y) for seg in poly.segs]
