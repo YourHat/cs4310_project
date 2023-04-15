@@ -33,7 +33,9 @@ class LineSegment:
     def __str__(self) -> str:
         return f'({self.a}, {self.b})'
 
-
+'''
+is_line_segment is a function that returns True if point is a segment
+'''
 def is_line_segment(a: Point, b: Point, c: Point) -> bool:
     p0 = b.x - a.x, b.y - a.y
     p1 = c.x - a.x, c.y - a.y
@@ -47,7 +49,9 @@ def is_line_segment(a: Point, b: Point, c: Point) -> bool:
         or (p1[0] == 0 and p1[1] == 0)
     )
 
-
+'''
+is_in_polygon is a function that returns True if vertices is a polygon set
+'''
 def is_in_polygon(p: Point, Vertices: list[LineSegment]) -> bool:
     res = complex(0, 0)
     for i in range(1, len(Vertices) + 1):
@@ -63,9 +67,16 @@ def is_in_polygon(p: Point, Vertices: list[LineSegment]) -> bool:
 
 
 class Polygon:
+    '''
+    first : starting Point(x,y)
+    segs : list of line segments making up polygon from first
+    '''
     first: Point = None
     segs: list[LineSegment] = []
 
+    '''
+    function appends a point to a line segment
+    '''
     def append(self, p: Point):
         if len(self.segs) == 0 and self.first == None:
             self.first = p
@@ -78,12 +89,21 @@ class Polygon:
             self.segs.append(last)
             self.segs.append(new)
 
+    '''
+    function checks if point lies on the left half of the polygon
+    '''
     def is_left_half(self, p: Point):
         return p.x < (max(self.segs, key=lambda p: p.a.x).a.x / 2)
 
+    '''
+    function checks if point is on the top half of the polygon
+    '''
     def is_top_half(self, p: Point):
         return p.y > (max(self.segs, key=lambda p: p.a.y).a.y / 2)
 
+    '''
+    function creates an indentation of theta > 180 to the polygon
+    '''
     def add_indent(self):
         size = len(self.segs)
         if size > 2:
