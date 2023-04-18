@@ -129,13 +129,14 @@ def is_triangle_left(a: Point, b: Point, c: Point):
     d2y = c.y - b.y
 
     # Determinate tells us which side our new triangles b point
-    # points (in to the triangle is positive, negative means it
-    # is inside the polygon)
+    # points (in to the polygon is positive, negative means it
+    # is inside the polygon and points outwards)
+    #
+    # This is only fooled by a specific shape which is why for all
+    # points they must be `in_triangle`
     det = d1x * d2y - d2x * d1y
     return det < 0.0
 
-def area(a: Point, b: Point, c: Point) -> int:
-    return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)
 
 def polygon_decomposition(poly: Polygon) -> list[LineSegment]:
     """
@@ -144,7 +145,7 @@ def polygon_decomposition(poly: Polygon) -> list[LineSegment]:
     polygon having n vertices (simple meaning no holes).
     """
 
-    const_points = [s.a for s in poly.segs]
+    # const_points = [s.a for s in poly.segs]
     lines = []
     points = [s for s in poly.segs]
     while len(points) > 3:
@@ -153,8 +154,6 @@ def polygon_decomposition(poly: Polygon) -> list[LineSegment]:
             points[1],
             points[2],
         )
-        # if (is_line_in_polygon(LineSegment(a.a, c.a), const_points)
-        #     and is_triangle_left(a.a, b.a, c.a)):
         if is_triangle_left(a.a, b.a, c.a) and all(
             not in_triangle(a.a, b.a, c.a, x.a) for x in points[3:]
         ):
@@ -166,9 +165,6 @@ def polygon_decomposition(poly: Polygon) -> list[LineSegment]:
                 and is_triangle_left(a.a, b.a, c.a)
                 and all(not in_triangle(a.a, b.a, c.a, x.a) for x in points[3:])
             ):
-            # while len(points) > 3 and is_line_in_polygon(
-            #     LineSegment(a.a, c.a), const_points
-            # ) and is_triangle_left(a.a, b.a, c.a):
                 points.pop(1)
                 lines.append(LineSegment(a.a, c.a))
                 b, c = c, points[2]

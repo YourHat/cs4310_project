@@ -9,7 +9,7 @@ def area(p, q, r):
     return (q[1] - p[1]) * (r[2] - p[2]) - (q[2] - p[2]) * (r[1] - p[1])
 
 
-def seidel_triangulate(poly):
+def seidel_triangulate(poly: list[tuple[float, float]]):
     '''Triangulate a simple polygon using Seidel's algorithm.
     poly: a list of (x, y) tuples representing the vertices of the polygon.
     Returns a list of triangular faces, where each face is a list of vertex indices.'''
@@ -19,12 +19,13 @@ def seidel_triangulate(poly):
 
     # Sort vertices by x-coordinate, then by y-coordinate
     poly.sort(key=lambda p: (p[1], p[2]))
+    print(poly)
 
     # Initialize a deque with the leftmost vertex and the two vertices immediately to its right
-    que = deque([poly[0], poly[1], poly[2]])
+    que: deque[tuple[int, float, float]] = deque((poly[0], poly[1], poly[2]))
 
     # Initialize a list to hold the triangular faces
-    faces = []
+    faces: list[tuple[int, float, float]] = []
 
     # Iterate over the remaining vertices in order
     for i in range(3, len(poly)):
@@ -53,8 +54,13 @@ def seidel_triangulate(poly):
     faces.sort()
 
     # Return the list of faces, without the vertex indices
-    return [[v[1:] for v in face] for face in faces]
+    return [face[1:] for face in faces]
 
+
+def chunks(lst, n):
+    """Yield successive n-sized chunks from lst."""
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
@@ -76,11 +82,12 @@ if __name__ == '__main__':
         plt.figure(stupid)
         plt.plot(x, y, color='black')
 
-        for tri in seidel_triangulate([(l.a.x, l.a.y) for l in poly.segs]):
+        points = [(l.a.x, l.a.y) for l in poly.segs]
+        for tri in chunks(seidel_triangulate(points), 2):
+            print(tri)
             a_x, a_y = tri[0][0], tri[0][1]
             b_x, b_y = tri[1][0], tri[1][1]
-            c_x, c_y = tri[2][0], tri[2][1]
-            plt.plot([a_x, b_x, c_x], [a_y, b_y, c_y])
+            plt.plot([a_x, b_x], [a_y, b_y])
 
         plt.show()
         # plt.pause(3)
