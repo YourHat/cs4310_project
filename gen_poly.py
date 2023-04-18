@@ -1,4 +1,4 @@
-from random import random, randint
+from random import random, randint, seed
 from math import pi, cos, sin
 from cmath import log
 
@@ -27,17 +27,17 @@ class LineSegment:
     a: Point
     b: Point
 
-    def __init__(self, a, b) -> None:
+    def __init__(self, a: Point, b: Point) -> None:
         self.a = a
         self.b = b
 
     def __str__(self) -> str:
         return f'({self.a}, {self.b})'
 
-'''
-is_line_segment is a function that returns True if point is a segment
-'''
+
 def is_line_segment(a: Point, b: Point, c: Point) -> bool:
+    '''
+    is_line_segment is a function that returns True if point is a segment'''
     p0 = b.x - a.x, b.y - a.y
     p1 = c.x - a.x, c.y - a.y
 
@@ -50,10 +50,13 @@ def is_line_segment(a: Point, b: Point, c: Point) -> bool:
         or (p1[0] == 0 and p1[1] == 0)
     )
 
+
 '''
 is_in_polygon is a function that returns True if vertices is a polygon set
 '''
-def is_in_polygon(p: Point, Vertices: list[LineSegment]) -> bool:
+
+
+def is_point_in_polygon(p: Point, Vertices: list[LineSegment]) -> bool:
     res = complex(0, 0)
     for i in range(1, len(Vertices) + 1):
         v0, v1 = Vertices[i - 1], Vertices[i % len(Vertices)]
@@ -72,12 +75,18 @@ class Polygon:
     first : starting Point(x,y)
     segs : list of line segments making up polygon from first
     '''
-    first: Point = None
-    segs: list[LineSegment] = []
+
+    first: Point
+    segs: list[LineSegment]
+
+    def __init__(self) -> None:
+        self.first = None
+        self.segs = []
 
     '''
     function appends a point to a line segment
     '''
+
     def append(self, p: Point):
         if len(self.segs) == 0 and self.first == None:
             self.first = p
@@ -90,22 +99,22 @@ class Polygon:
             self.segs.append(last)
             self.segs.append(new)
 
-    '''
-    function checks if point lies on the left half of the polygon
-    '''
     def is_left_half(self, p: Point):
+        '''
+        function checks if point lies on the left half of the polygon
+        '''
         return p.x < (max(self.segs, key=lambda p: p.a.x).a.x / 2)
 
-    '''
-    function checks if point is on the top half of the polygon
-    '''
     def is_top_half(self, p: Point):
+        '''
+        function checks if point is on the top half of the polygon
+        '''
         return p.y > (max(self.segs, key=lambda p: p.a.y).a.y / 2)
 
-    '''
-    function creates an indentation of theta > 180 to the polygon
-    '''
     def add_indent(self):
+        '''
+        function creates an indentation of theta > 180 to the polygon
+        '''
         size = len(self.segs)
         if size > 2:
             line_idx = randint(0, size - 1)
@@ -120,7 +129,7 @@ class Polygon:
                 print(line.a == new_p or line.b == new_p)
                 # TODO:
                 # I'm sure there is a better way to do this...
-                if not is_in_polygon(new_p, self.segs) or (
+                if not is_point_in_polygon(new_p, self.segs) or (
                     line.a == new_p or line.b == new_p
                 ):
                     left, top = self.is_left_half(new_p), self.is_top_half(new_p)
@@ -152,13 +161,11 @@ class Polygon:
         return '\n'.join(str(seg) for seg in self.segs)
 
 
-def generate_polygon(num_points, convex=True, cuts=0) -> Polygon:
+def generate_polygon(num_points, convex=True) -> Polygon:
     """
     To generate a simple (convex) polygon leave the second and third
     arguments `convex` and `cuts` alone.
-    To generate a complex polygon (with no holes) `convex=False, cuts=n`
-    where `n` is some number less than `num_points`. `cuts` can be left blank
-    and `num_points // 2` will be used.
+    To generate a complex polygon (with no holes) `convex=False`.
     """
     points = [random() * (2.0 * pi) for _ in range(num_points + 1)]
     points.sort()
@@ -167,13 +174,10 @@ def generate_polygon(num_points, convex=True, cuts=0) -> Polygon:
     x_o = 5.0
     y_o = 5.0
     r = 5.0
-    for p in points:
-        # for i, p in enumerate(points):
-        # TODO: possible way to make concave polygon
-        #
+    for i, p in enumerate(points):
         # vacillate between `r` between 1 to 5 and `r` between 1 and last `r`
-        # if not convex:
-        #     r = r + random() * (5 - r) if i % 2 else 1 + random() * (r - 1)
+        if not convex:
+            r = r + random() * (5 - r) if i % 2 else 1 + random() * (r - 1)
         poly.append(
             Point(
                 x_o + r * cos(p),
@@ -181,48 +185,5 @@ def generate_polygon(num_points, convex=True, cuts=0) -> Polygon:
             )
         )
 
-    if not convex:
-        cuts = cuts if cuts != 0 else num_points - num_points // 2
-        for _ in range(cuts):
-            poly.add_indent()
-
     return poly
 
-
-def neighbors(origin: LineSegment, next: LineSegment) -> bool:
-    return origin.b == next.a or origin.a == next.b
-
-
-def ear_clip(poly: Polygon) -> list[LineSegment]:
-    lines = []
-    origin = min(poly.segs, key=lambda seg: seg.a.x)
-    for seg in poly.segs:
-        if not neighbors(origin, seg):
-            lines.append(LineSegment(origin.a, seg.a))
-    return lines
-
-
-if __name__ == '__main__':
-    # print('\n'.join(str(seg.a) for seg in generate_polygon(5, convex=False, cuts=2).segs))
-    import matplotlib.pyplot as plt
-
-    # poly = generate_polygon(8, convex=False, cuts=5)
-    poly = generate_polygon(8)
-
-    # Make two lists
-    coords = [(seg.a.x, seg.a.y) for seg in poly.segs]
-    coords.append(coords[0])
-    x, y = zip(*coords)
-
-    plt.figure()
-    plt.plot(x, y)
-    # plt.show()
-
-    i = 0
-    for seg in ear_clip(poly):
-        i += 1
-        a_x, a_y = seg.a.x, seg.a.y
-        b_x, b_y = seg.b.x, seg.b.y
-        plt.plot([a_x, b_x], [a_y, b_y])
-
-    plt.show()
