@@ -1,91 +1,217 @@
-class Point:
-    x: int
-    y: int
+from random import seed
+
+from gen_poly import (
+    Point,
+    LineSegment,
+    Polygon,
+    generate_polygon,
+)
 
 
-class LineSegment:
-    x: Point
-    y: Point
-
-
-class Triangle:
-    a: Point
-    b: Point
-    c: Point
-
-
-class Trapezoid:
-    a: Point
-    b: Point
-    c: Point
-    d: Point
-
-
-def add_horizontal_line_from_connecting_vertex(line_a, line_b, trapezoids):
+def point_in_poly(x: float, y: float, poly: list[Point]):
     """
-    `line_a` connects to `line_b` at `v`, there are 3 options for adding the
-    horizontal line.
+    Check if a point is inside a polygon.
     """
-    horizontal_line = LineSegment()
-    if line_a.is_above(horizontal_line) and line_b.is_below(horizontal_line):
-        remove_line(trapezoids, line_a)
-        add_line(trapezoids, line_b)
-    elif line_a.is_above(horizontal_line) and line_b.is_above(horizontal_line):
-        remove_line(trapezoids, line_a, line_b)
-    elif line_a.is_below(horizontal_line) and line_b.is_below(horizontal_line):
-        add_line(trapezoids, line_a, line_b)
+    n = len(poly)
+    inside = False
+
+    p1x, p1y = poly[0].x, poly[0].y
+    for i in range(1, n + 1):
+        p2x, p2y = poly[i % n].x, poly[i % n].y
+        if y > min(p1y, p2y):
+            if y <= max(p1y, p2y):
+                if x <= max(p1x, p2x):
+                    if p1y != p2y:
+                        xints = (y - p1y) * (p2x - p1x) / (p2y - p1y) + p1x
+                    if p1x == p2x or x <= xints:
+                        inside = not inside
+        p1x, p1y = p2x, p2y
+
+    return inside
 
 
-def horizontal(line_a, line_b) -> bool:
-    pass
-
-def decompose_poly_to_trap(polygon) -> list[Trapezoid]:
+def do_lines_intersect(
+    x1: float,
+    y1: float,
+    x2: float,
+    y2: float,
+    x3: float,
+    y3: float,
+    x4: float,
+    y4: float,
+):
     """
-    `decompose_poly_to_trap` Uses a random ordering of segments it incrementally builds
-    trapezoids from segments. It checks that 2 given segments are not horizontal since
-    using parallel segments increases number of trapezoids. It "draws" additional horizontal
-    lines from vertices to create monotone polygon's of the trapezoids (it draws a line
-    that only connects with 2 segments).
+    Given two line segments (x1,y1)-(x2,y2) and (x3,y3)-(x4,y4),
+    returns True if the segments intersect, False otherwise.
+    """
+    # calculate the direction of each line segment
+    dx1 = x2 - x1  # a
+    dy1 = y2 - y1  # b
+    dx2 = x4 - x3  # c
+    dy2 = y4 - y3  # d
+
+    # calculate the determinant of the matrix formed by the direction vectors
+    det = dx1 * dy2 - dx2 * dy1 # f
+
+    # if the determinant is zero, the lines are parallel and do not intersect
+    if det == 0:
+        return True
+
+    # determine if
+    # ua = (dx2 * (y1 - y3) - dy2 * (x1 - x3)) / det
+    # ua = (dx2 * (y1 - y3) + dy2 * x3 - dy2 * x1) / det  # s
+    # ua = (dx2 * (y1 - y2) + (dy2 * x2) - (dy2 * x1)) / det
+    s = (x1 * (y4 - y3) + x3 * (y1 - y4) + x4 * (y3 - y1)) / (
+        x1 * (y4 - y3) + x2 * (y3 - y4) + x4 * (y2 - y1) + x3 * (y1 - y2)
+    )
+
+    # ub = (dx1 * (y1 - y3) - dy1 * (x1 - x3)) / det
+    # ub = (dx1 * (y1 - y3) + dy1 * x3 - dy1 * x1) / det  # t
+    t = -(x1 * (y3 - y2) + x2 * (y1 - y3) + x3 * (y2 - y1)) / (
+        x1 * (y4 - y3) + x2 * (y3 - y4) + x4 * (y2 - y1) + x3 * (y1 - y2)
+    )
+    # ub = (dx1 * (y1 - y2) + (dy1 * x2) - (dy1 * x1)) / det
+    print(s, t)
+    # if both parameters are between 0 and 1, the line segments intersect
+    if 0.0 < s < 1.0 and 0.0 < t < 1.0:
+        return True
+    else:
+        return False
+
+
+def line_in_poly(x1: float, y1: float, x2: float, y2: float, poly: list[Point]):
+    """
+    Check if a line segment is entirely inside a polygon.
     """
 
-    trapezoids = []
-    # sort all points by `y` coordinate
-    sort(polygon, lambda point: point.y)
-    prev_seg = polygon.remove(0)
-    for seg in polygon:
-        if not horizontal(prev_seg, seg):
-            add_horizontal_line_from_connecting_vertex(prev_seg, seg, trapezoids)
-        prev_seg = seg
+    # if not point_in_poly(x1, y1, poly) or not point_in_poly(x2, y2, poly):
+    #     print('endpoints not in polygon')
+    #     return False
 
-    decompose_trap_to_mono(trapezoids)
+    for i in range(len(poly)):
+        x3, y3 = poly[i].x, poly[i].y
+        x4, y4 = poly[(i + 1) % len(poly)].x, poly[(i + 1) % len(poly)].y
+        if do_lines_intersect(x1, y1, x2, y2, x3, y3, x4, y4):
+            print('lines intersect', (x1, y1), (x2, y2), (x3, y3), (x4, y4))
+            return False
+
+    return True
 
 
-def decompose_trap_to_mono(trapezoid):
+def is_line_in_polygon(seg: LineSegment, poly: list[Point]):
+    return line_in_poly(seg.a.x, seg.a.y, seg.b.x, seg.b.y, poly)
+
+
+def sub(a, b):
+    return Point(a.x - b.x, a.y - b.y)
+
+
+def det(a, b):
+    return a.x * b.y - b.x * a.y
+
+
+def in_triangle(a, b, c, x):
+    return (
+        True
+        and det(sub(a, x), sub(b, x)) > 0
+        and det(sub(b, x), sub(c, x)) > 0
+        and det(sub(c, x), sub(a, x)) > 0
+    )
+
+
+def is_triangle_left(a: Point, b: Point, c: Point):
     """
-    `decompose_trap_to_mono` Removes trapezoids that fail the monotone polygon test.
+    Determine if the `b` point is inside the polygon.
     """
-    if not monotone_polygon(trapezoid):
-        # TODO: fix non mono trapezoid somehow, may need polygon list too or last few traps?
-        pass
+    d1x = a.x - b.x
+    d1y = a.y - b.y
+    d2x = c.x - b.x
+    d2y = c.y - b.y
+
+    # Determinate tells us which side our new triangles b point
+    # points (in to the triangle is positive, negative means it
+    # is inside the polygon)
+    det = d1x * d2y - d2x * d1y
+    return det < 0.0
 
 
-def cut_traps_in_half(mono_traps):
-    """
-    `cut_traps_in_half` Make a line from opposite corners.
-
-    """
-    for trap in mono_traps:
-        # add a line from trap.a to trap.c or another diagonal points
-        # checking if this is already just a triangle
-        pass
-
-
-def polygon_decomposition(polygon) -> list[Triangle]:
+def polygon_decomposition(poly: Polygon) -> list[LineSegment]:
     """
     `polygon_decomposition` is an incremental randomized algorithm whose expected
     complexity is O(n log*n). In practice, it is almost linear time for a simple
     polygon having n vertices (simple meaning no holes).
     """
-    trapezoids = decompose_poly_to_trap(polygon)
-    mono = decompose_trap_to_mono(polygon, trapezoids)
-    triangulated_polygon = cut_traps_in_half(mono)
+
+    const_points = [s.a for s in poly.segs]
+    lines = []
+    points = [s for s in poly.segs]
+    while len(points) > 3:
+        a, b, c = (
+            points[0],
+            points[1],
+            points[2],
+        )
+        # if (is_line_in_polygon(LineSegment(a.a, c.a), const_points)
+        #     and is_triangle_left(a.a, b.a, c.a)):
+        if is_triangle_left(a.a, b.a, c.a) and all(
+            not in_triangle(a.a, b.a, c.a, x.a) for x in points[3:]
+        ):
+            points.pop(1)
+            lines.append(LineSegment(a.a, c.a))
+            b, c = c, points[2]
+            while (
+                len(points) > 3
+                and is_triangle_left(a.a, b.a, c.a)
+                and all(not in_triangle(a.a, b.a, c.a, x.a) for x in points[3:])
+            ):
+            # while len(points) > 3 and is_line_in_polygon(
+            #     LineSegment(a.a, c.a), const_points
+            # ) and is_triangle_left(a.a, b.a, c.a):
+                points.pop(1)
+                lines.append(LineSegment(a.a, c.a))
+                b, c = c, points[2]
+        points.append(points.pop(0))
+
+    return lines
+
+
+def timer(func, *args):
+    from time import time
+
+    a = time()
+    res = func(*args)
+    b = time()
+    print(b - a)
+    return res
+
+
+if __name__ == '__main__':
+    import matplotlib.pyplot as plt
+
+    seed(int(input()))
+    for stupid in range(10, 1000, 100):
+        print('number of points', stupid)
+
+        poly = generate_polygon(stupid, convex=False)
+
+        print('poly len', len(poly.segs))
+
+        # Make two lists
+        coords = [(seg.a.x, seg.a.y) for seg in poly.segs]
+        coords.append(coords[0])
+        x, y = zip(*coords)
+
+        print(len(x))
+        plt.figure(stupid)
+        plt.plot(x, y, color='black')
+
+        i = 0
+        for seg in timer(polygon_decomposition, poly):
+            i += 1
+            a_x, a_y = seg.a.x, seg.a.y
+            b_x, b_y = seg.b.x, seg.b.y
+            plt.plot([a_x, b_x], [a_y, b_y])
+
+        plt.show()
+        # plt.pause(3)
+        # plt.clf()
