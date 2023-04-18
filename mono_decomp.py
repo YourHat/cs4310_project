@@ -134,6 +134,8 @@ def is_triangle_left(a: Point, b: Point, c: Point):
     det = d1x * d2y - d2x * d1y
     return det < 0.0
 
+def area(a: Point, b: Point, c: Point) -> int:
+    return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)
 
 def polygon_decomposition(poly: Polygon) -> list[LineSegment]:
     """
