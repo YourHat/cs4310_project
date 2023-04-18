@@ -112,14 +112,13 @@ def det(a, b):
 
 def in_triangle(a, b, c, x):
     return (
-        True
-        and det(sub(a, x), sub(b, x)) > 0
+        det(sub(a, x), sub(b, x)) > 0
         and det(sub(b, x), sub(c, x)) > 0
         and det(sub(c, x), sub(a, x)) > 0
     )
 
 
-def is_triangle_left(a: Point, b: Point, c: Point):
+def is_triangle_left(a: Point, b: Point, c: Point) -> bool:
     """
     Determine if the `b` point is inside the polygon.
     """
@@ -145,7 +144,6 @@ def polygon_decomposition(poly: Polygon) -> list[LineSegment]:
     polygon having n vertices (simple meaning no holes).
     """
 
-    # const_points = [s.a for s in poly.segs]
     lines = []
     points = [s for s in poly.segs]
     while len(points) > 3:

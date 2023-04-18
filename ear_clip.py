@@ -1,4 +1,4 @@
-from gen_poly import generate_polygon, LineSegment, Point, Polygon
+from gen_poly import generate_polygon, LineSegment, Polygon
 
 
 def neighbors(origin: LineSegment, next: LineSegment) -> bool:
