@@ -2,14 +2,15 @@ from random import seed
 import matplotlib.pyplot as plt
 from time import time
 
-from gen_poly import generate_polygon
+from gen_poly import generate_polygon, Polygon, Point
+from gen_crazy_poly import gen_concave_poly
 from ear_clip import ear_clip
 from mono_decomp import polygon_decomposition
 
-MAX_POINTS = 500
-INC_BY = 100
+MAX_POINTS = 100
+INC_BY = 10
 START = 10
-ROUNDS = 10
+ROUNDS = 1
 
 SHOW_PLOT = True
 
@@ -23,7 +24,7 @@ def timer(func, *args, time_map: dict[int, list[float]], iter: int):
 def main():
     # To test ear clipping
     EAR_MAP = {}
-    seed(7)
+    seed(9)
     for nodes in range(START, MAX_POINTS, INC_BY):
         for rounds in range(ROUNDS):
             poly = generate_polygon(nodes)
@@ -55,11 +56,14 @@ def main():
 
     # To test monotone mountain polygon decomposition triangulation
     CONCAVE_MAP = {}
-    seed(7)
+    seed(9)
     for nodes in range(START, MAX_POINTS, INC_BY):
-        print(nodes)
         for rounds in range(ROUNDS):
-            poly = generate_polygon(nodes, convex=False)
+            # poly = generate_polygon(nodes, convex=False)
+            poly = Polygon()
+            points = gen_concave_poly(nodes)
+            for p in points:
+                poly.append(Point(p[0], p[1]))
 
             if rounds == 0 and SHOW_PLOT:
                  # Make two lists
