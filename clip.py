@@ -210,9 +210,9 @@ def ex2():
 
 
 
-#def temp_main():
-#    ex1()
-#    ex2()
+def temp_main():
+    ex1()
+    ex2()
 
-#temp_main()
+temp_main()
                      
