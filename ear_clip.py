@@ -27,7 +27,7 @@ if __name__ == '__main__':
     plt.figure()
     plt.plot(x, y)
     # plt.show()
-
+    print("helllooooooooooooooooooooooo")
     i = 0
     for seg in ear_clip(poly):
         i += 1
